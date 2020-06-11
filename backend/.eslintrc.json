@@ -16,7 +16,13 @@
   "plugins": ["@typescript-eslint"],
   "rules": {
     "class-methods-use-this": 0,
-    "import/extensions": 0,
-    "import/no-unresolved": 0
+    "import/extensions": 0
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
   }
 }
