@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import hashPass from '../utils/HashPassword';
 
 const prisma = new PrismaClient();
 class AdminController {
@@ -12,12 +13,12 @@ class AdminController {
       longitude = 0,
       whatsapp = '',
     } = req.body;
-
+    const hash_pass = hashPass(password);
     const admin = await prisma.admin.create({
       data: {
         name,
         email,
-        password,
+        password: hash_pass,
         latitude,
         longitude,
         whatsapp,
@@ -45,12 +46,28 @@ class AdminController {
 
   async update(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
-    const data = req.body;
+    const {
+      name,
+      email,
+      password,
+      latitude = 0,
+      longitude = 0,
+      whatsapp = '',
+    } = req.body;
+    const hash_pass = hashPass(password);
+
     const admin = await prisma.admin.update({
       where: {
         id: Number(id),
       },
-      data,
+      data: {
+        name,
+        email,
+        password: hash_pass,
+        latitude,
+        longitude,
+        whatsapp,
+      },
     });
 
     return res.json(admin);
