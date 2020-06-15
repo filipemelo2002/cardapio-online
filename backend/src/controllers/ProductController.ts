@@ -21,18 +21,24 @@ class ProductController {
       price,
       ingredients,
       sizes,
+      category,
     } = req.body;
     const product = await prisma.product.create({
       data: {
         title,
         image,
         price,
-        ingredients: { create: ingredients },
-        sizes: { create: sizes },
+        Ingredient: { create: ingredients },
+        Size: { create: sizes },
+        Category: {
+          connect: {
+            id: category,
+          },
+        },
       },
       include: {
-        ingredients: true,
-        sizes: true,
+        Ingredient: true,
+        Size: true,
       },
     });
     return res.json(product);
@@ -41,8 +47,8 @@ class ProductController {
   async index(re: Request, res: Response): Promise<Response> {
     const products = await prisma.product.findMany({
       include: {
-        ingredients: true,
-        sizes: true,
+        Ingredient: true,
+        Size: true,
       },
     });
     return res.json(products);
@@ -55,8 +61,8 @@ class ProductController {
         id: Number(id),
       },
       include: {
-        ingredients: true,
-        sizes: true,
+        Ingredient: true,
+        Size: true,
       },
     });
     return res.json(product);
@@ -70,6 +76,7 @@ class ProductController {
       price,
       ingredients,
       sizes,
+      category,
     } = req.body;
     const sequelizedIngredients = ingredients.map(
       (ingredient: Ingredient) => ({
@@ -95,16 +102,21 @@ class ProductController {
         title,
         image,
         price,
-        ingredients: {
+        Category: {
+          connect: {
+            id: category,
+          },
+        },
+        Ingredient: {
           updateMany: sequelizedIngredients,
         },
-        sizes: {
+        Size: {
           updateMany: sequelizedSizes,
         },
       },
       include: {
-        ingredients: true,
-        sizes: true,
+        Ingredient: true,
+        Size: true,
       },
     });
     return res.json(product);
