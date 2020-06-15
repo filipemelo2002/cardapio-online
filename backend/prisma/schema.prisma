@@ -1,46 +1,51 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+generator client {
+  provider = "prisma-client-js"
+}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
-model Admin{
-  id Int @id @default(autoincrement())
-  name String
-  email String @unique
-  password String
-  whatsapp String? @unique
-  latitude Float?
+model Admin {
+  email     String  @unique
+  id        Int     @default(autoincrement()) @id
+  latitude  Float?
   longitude Float?
+  name      String
+  password  String
+  whatsapp  String? @unique
 }
 
-model Ingredient{
-  id Int @id @default(autoincrement())
-  title String
-  price Float?
+model Category {
+  id      Int       @default(autoincrement()) @id
+  title   String
+  Product Product[]
+}
+
+model Ingredient {
+  id        Int     @default(autoincrement()) @id
+  price     Float?
   productId Int
-  product Product @relation(fields: [productId], references:[id])   
+  title     String
+  Product   Product @relation(fields: [productId], references: [id])
 }
 
-model Size{
-  id Int @id @default(autoincrement())
-  title String
-  price Float
+model Product {
+  category   Int
+  id         Int          @default(autoincrement()) @id
+  image      String
+  price      Float?
+  title      String
+  Category   Category     @relation(fields: [category], references: [id])
+  Ingredient Ingredient[]
+  Size       Size[]
+}
+
+model Size {
+  id        Int     @default(autoincrement()) @id
+  price     Float
   productId Int
-  product Product @relation(fields: [productId], references:[id])
-}
-
-model Product{
-  id Int @id @default(autoincrement())
-  title String
-  image String
-  price Float?
-  ingredients Ingredient[]
-  sizes Size[]
+  title     String
+  Product   Product @relation(fields: [productId], references: [id])
 }
