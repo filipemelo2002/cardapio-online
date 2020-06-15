@@ -2,6 +2,17 @@ import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
+
+interface Ingredient {
+  id: number;
+  title: string;
+  price: number | null;
+}
+interface Size {
+  id: number;
+  title: string;
+  price: number;
+}
 class ProductController {
   async create(req: Request, res: Response): Promise<Response> {
     const {
@@ -53,7 +64,29 @@ class ProductController {
 
   async update(req: Request, res: Response): Promise<Response> {
     const { id } = req.params;
-    const { title, image = 'imagem.jpg', price } = req.body;
+    const {
+      title,
+      image = 'imagem.jpg',
+      price,
+      ingredients,
+      sizes,
+    } = req.body;
+    const sequelizedIngredients = ingredients.map(
+      (ingredient: Ingredient) => ({
+        where: { id: ingredient.id },
+        data: {
+          title: ingredient.title,
+          price: ingredient.price,
+        },
+      }),
+    );
+    const sequelizedSizes = sizes.map((size: Size) => ({
+      where: { id: size.id },
+      data: {
+        title: size.title,
+        price: size.price,
+      },
+    }));
     const product = await prisma.product.update({
       where: {
         id: Number(id),
@@ -62,6 +95,16 @@ class ProductController {
         title,
         image,
         price,
+        ingredients: {
+          updateMany: sequelizedIngredients,
+        },
+        sizes: {
+          updateMany: sequelizedSizes,
+        },
+      },
+      include: {
+        ingredients: true,
+        sizes: true,
       },
     });
     return res.json(product);
