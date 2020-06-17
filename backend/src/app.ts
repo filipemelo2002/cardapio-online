@@ -1,3 +1,4 @@
+import cors from 'cors';
 import express, { Express } from 'express';
 import routes from './routes';
 
@@ -6,6 +7,7 @@ class App {
 
   constructor() {
     this.app = express();
+    this.app.use(cors());
     this.app.use(express.json());
     this.routes();
   }
