@@ -14,18 +14,24 @@ class AdminController {
       whatsapp = '',
     } = req.body;
     const hash_pass = hashPass(password);
-    const admin = await prisma.admin.create({
-      data: {
-        name,
-        email,
-        password: hash_pass,
-        latitude,
-        longitude,
-        whatsapp,
-      },
-    });
+    try {
+      const admin = await prisma.admin.create({
+        data: {
+          name,
+          email,
+          password: hash_pass,
+          latitude,
+          longitude,
+          whatsapp,
+        },
+      });
 
-    return res.json(admin);
+      return res.json(admin);
+    } catch (err) {
+      return res
+        .status(400)
+        .json({ message: 'Admin already exists' });
+    }
   }
 
   async show(req: Request, res: Response): Promise<Response> {
@@ -56,21 +62,27 @@ class AdminController {
     } = req.body;
     const hash_pass = hashPass(password);
 
-    const admin = await prisma.admin.update({
-      where: {
-        id: Number(id),
-      },
-      data: {
-        name,
-        email,
-        password: hash_pass,
-        latitude,
-        longitude,
-        whatsapp,
-      },
-    });
+    try {
+      const admin = await prisma.admin.update({
+        where: {
+          id: Number(id),
+        },
+        data: {
+          name,
+          email,
+          password: hash_pass,
+          latitude,
+          longitude,
+          whatsapp,
+        },
+      });
 
-    return res.json(admin);
+      return res.json(admin);
+    } catch (err) {
+      return res
+        .status(400)
+        .json({ message: 'Operation not permited' });
+    }
   }
 
   async destroy(req: Request, res: Response): Promise<Response> {
